@@ -17,6 +17,7 @@ const typeDefs = `
     type Query {
         courses(topic: String): [Course]
         course(id: Int!): Course
+        coursesByTitle(title: String!): [Course]
     }
 
     type Mutation {
@@ -57,37 +58,40 @@ const coursesData = [
 const resolvers = {
 	Query: {
 		course(parent, args, context, info) {
-			
 			const id = args.id;
 			return coursesData.filter((course) => {
 				return course.id == id;
 			})[0];
 		},
 		courses(parent, args, context, info) {
-			
-			if ( args.topic) {
+			if (args.topic) {
 				const topic = args.topic;
 				return coursesData.filter((course) => course.topic === topic);
 			} else {
 				return coursesData;
 			}
 		},
+		coursesByTitle(parent, args, context, info) {
+            const lowerTitle = args.title.toLowerCase();
+
+			return coursesData.filter((course) => course.title.toLowerCase().includes(lowerTitle));
+		},
 	},
 
-    Mutation: {
-        updateTopic(_, args, context, info) {
-            const {id, topic} = args;
+	Mutation: {
+		updateTopic(_, args, context, info) {
+			const { id, topic } = args;
 
-            coursesData.forEach((course) => {
-                if (course.id === id) {
-                    course.topic = topic;
-                    return course;
-                }
-            });
-            console.log(coursesData);
-            return coursesData.filter(course => course.id === id)[0];
-        },
-    },
+			coursesData.forEach((course) => {
+				if (course.id === id) {
+					course.topic = topic;
+					return course;
+				}
+			});
+			console.log(coursesData);
+			return coursesData.filter((course) => course.id === id)[0];
+		},
+	},
 };
 
 const server = new ApolloServer({
