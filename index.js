@@ -13,6 +13,16 @@ const typeDefs = `
         url: String
     }
 
+    #input
+    input CourseInput {
+        id: Int!
+        title: String!
+        author: String!
+        description: String!
+        topic: String!
+        url: String!
+    }
+
     #query type
     type Query {
         courses(topic: String): [Course]
@@ -22,6 +32,7 @@ const typeDefs = `
 
     type Mutation {
         updateTopic(id: Int!, topic: String!) : Course
+        course(course: CourseInput!): [Course]
     }
 `;
 
@@ -91,6 +102,12 @@ const resolvers = {
 			console.log(coursesData);
 			return coursesData.filter((course) => course.id === id)[0];
 		},
+        course(_, args, context, info) {
+            const course = args.course;
+
+            coursesData.push(course);
+            return coursesData;
+        }
 	},
 };
 
